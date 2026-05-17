@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegisterController;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -103,60 +104,55 @@ Route::get('/pekerja/detail_permit/{id}', function ($id) {
 /*
 | DASHBOARD ADMIN
 */
+
 Route::get('/admin/dashboard', function () {
 
-    $permits = [
+    $permit = [
+          ['id' => 'PRM-001', 'nama' => 'Mira Agustiansyah', 'area' => 'Area Las', 'jenis' => 'Hot Work', 'tanggal' => '16 Jan 2026', 'status' => 'Selesai'],
+        ['id' => 'PRM-002', 'nama' => 'Dinda Cahya', 'area' => 'Line 1', 'jenis' => 'Cold Work', 'tanggal' => '01 Mar 2026', 'status' => 'Pending'],
+        ['id' => 'PRM-003', 'nama' => 'Dewi Rahayu', 'area' => 'Area Produksi', 'jenis' => 'Confined Space', 'tanggal' => '01 Mar 2026', 'status' => 'Selesai'],
+        ['id' => 'PRM-004', 'nama' => 'Ahmad Fauzi', 'area' => 'Area Gudang', 'jenis' => 'Cold Work', 'tanggal' => '06 Mar 2026', 'status' => 'Selesai'],
+        ['id' => 'PRM-005', 'nama' => 'Siti Nurhaliza', 'area' => 'Line 2', 'jenis' => 'Electrical Work', 'tanggal' => '06 Mar 2026', 'status' => 'Pending'],
+        ['id' => 'PRM-006', 'nama' => 'Riko Permana', 'area' => 'Area Las', 'jenis' => 'Cold Work', 'tanggal' => '06 Mar 2026', 'status' => 'Selesai'],
+        ['id' => 'PRM-007', 'nama' => 'Lestari Wulandari', 'area' => 'Line 1', 'jenis' => 'Hot Work', 'tanggal' => '11 Mar 2026', 'status' => 'Selesai'],
+        ['id' => 'PRM-008', 'nama' => 'Yoga Prasetya', 'area' => 'Line 1', 'jenis' => 'Hot Work', 'tanggal' => '19 Mar 2026', 'status' => 'Pending'],
+        ['id' => 'PRM-009', 'nama' => 'Fitri Handayani', 'area' => 'Area Gudang', 'jenis' => 'Confined Space', 'tanggal' => '11 Mar 2026', 'status' => 'Ditolak'],
+        ['id' => 'PRM-010', 'nama' => 'Dani Kurniawan', 'area' => 'Line 2', 'jenis' => 'Listrik & Instrument', 'tanggal' => '16 Mar 2026', 'status' => 'Selesai'],
+    ];  
 
-        // monitoring
-        ['jenis'=>'Confined Space'],
-        ['jenis'=>'Hot Work Permit'],
-        ['jenis'=>'Cold Work Permit'],
+    // ✅ Pagination
+    $perPage     = 5;
+    $currentPage = request()->get('page', 1);
+    $collection  = collect($permit);
 
-        // riwayat
-        ['jenis'=>'Permit Confined Space'],
-        ['jenis'=>'Cold Work Permit'],
-        ['jenis'=>'Listrik & Instrument'],
-        ['jenis'=>'Cold Work Permit'],
-        ['jenis'=>'Hot Work Permit'],
-        ['jenis'=>'Cold Work Permit'],
-        ['jenis'=>'Hot Work Permit'],
-    ];
+    $paginatedPermit = new LengthAwarePaginator(
+        $collection->slice(($currentPage - 1) * $perPage, $perPage)->values()->toArray(),
+        $collection->count(),
+        $perPage,
+        $currentPage,
+        ['path' => request()->url(), 'query' => request()->query()]
+    );
 
-    $chartData = [
-        'hot' => 0,
-        'cold' => 0,
-        'penggalian' => 0,
-        'listrik' => 0,
-        'kendaraan' => 0,
-        'confined' => 0,
-        'kompresor' => 0,
-    ];
+    // ✅ Chart — hitung dari $permit langsung, bukan $permits terpisah
+    $chartData = ['hot'=>0,'cold'=>0,'penggalian'=>0,'listrik'=>0,'kendaraan'=>0,'confined'=>0,'kompresor'=>0];
 
-    foreach($permits as $permit){
-        $jenis = strtolower($permit['jenis']);
+    foreach ($permit as $item) {   // ← $item bukan $permit
+        $jenis = strtolower($item['jenis']);
 
-        if(str_contains($jenis,'hot')){
-            $chartData['hot']++;
-        } elseif(str_contains($jenis,'cold')){
-            $chartData['cold']++;
-        } elseif(str_contains($jenis,'penggalian')){
-            $chartData['penggalian']++;
-        } elseif(str_contains($jenis,'listrik')){
-            $chartData['listrik']++;
-        } elseif(str_contains($jenis,'kendaraan')){
-            $chartData['kendaraan']++;
-        } elseif(str_contains($jenis,'confined')){
-            $chartData['confined']++;
-        } elseif(str_contains($jenis,'kompresor')){
-            $chartData['kompresor']++;
-        }
+        if      (str_contains($jenis, 'hot'))        $chartData['hot']++;
+        elseif  (str_contains($jenis, 'cold'))       $chartData['cold']++;
+        elseif  (str_contains($jenis, 'penggalian')) $chartData['penggalian']++;
+        elseif  (str_contains($jenis, 'listrik') ||
+                 str_contains($jenis, 'electrical') ||
+                 str_contains($jenis, 'instrument')) $chartData['listrik']++;
+        elseif  (str_contains($jenis, 'kendaraan'))  $chartData['kendaraan']++;
+        elseif  (str_contains($jenis, 'confined'))   $chartData['confined']++;
+        elseif  (str_contains($jenis, 'kompresor'))  $chartData['kompresor']++;
     }
 
-    return view('admin.dashboard', compact('chartData'));
+    return view('admin.dashboard', compact('chartData', 'paginatedPermit', 'permit'));
 
 })->middleware('auth')->name('admin.dashboard');
-
-
 /*
 | DASHBOARD SUPERVISOR
 */

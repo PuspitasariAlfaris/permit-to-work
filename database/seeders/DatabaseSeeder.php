@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
         // PEKERJA
         User::create([
             'name' => 'Mira Agustiansyah',
-            'email' => 'miraa@gmail.com',
+            'email' => 'miraa@outlook.com',
             'role' => 'pekerja',
             'status' => 'Aktif',
             'password' => Hash::make('pekerja123')
@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         // SUPERVISOR
         User::create([
             'name' => 'Puspitasari Alfaris',
-            'email' => 'pitaa@gmail.com',
+            'email' => 'pitaa@outlook.com',
             'role' => 'supervisor',
             'status' => 'Aktif',
             'password' => Hash::make('supervisor123')
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         // ADMIN
         User::create([
             'name' => 'Ayu Wulandari',
-            'email' => 'ayuu17@gmail.com',
+            'email' => 'ayuu17@outlook.com',
             'role' => 'admin',
             'status' => 'Aktif',
             'password' => Hash::make('adminadmin')
@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
         // SAFETY OFFICER
         User::create([
             'name' => 'Projek Bertiga',
-            'email' => 'projekbertiga@gmail.com',
+            'email' => 'projekbertiga@outlook.com',
             'role' => 'safety officer',
             'status' => 'Aktif',
             'password' => Hash::make('magang26')
