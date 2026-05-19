@@ -1,507 +1,201 @@
-<!DOCTYPE html>
-<html>
-<head>
+@extends('layouts.app')
 
-<title>Detail Permit - PT KMI</title>
+@section('title', 'Detail Permit')
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('content')
+<div class="max-w-5xl mx-auto space-y-6 pb-10">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-<style>
-
-/* ===== GLOBAL ===== */
-body{
-font-family:'Segoe UI', sans-serif;
-margin:0;
-
-/* 🔥 SAMAKAN DENGAN DASHBOARD */
-background: url("{{ asset('images/kmi2.jpg') }}") no-repeat center center fixed;
-background-size: cover;
-}
-
-/* ===== SIDEBAR ===== */
-.sidebar{
-width:240px;
-height:100vh;
-background:#2f3f52;
-position:fixed;
-top:0;
-left:0;
-color:white;
-display:flex;
-flex-direction:column;
-}
-
-.sidebar-header{
-padding:20px;
-text-align:center;
-border-bottom:1px solid rgba(255,255,255,0.1);
-}
-
-.sidebar-header img{
-width:140px;
-}
-
-.sidebar a{
-display:block;
-padding:14px 22px;
-color:#dce4ec;
-text-decoration:none;
-font-size:15px;
-}
-
-.sidebar a:hover{
-background:#3e5670;
-}
-
-.sidebar .active{
-background:#456ea4;
-color:white;
-}
-
-.logout{
-margin-top:auto;
-padding:20px;
-text-align:center;
-}
-
-/* ===== CONTENT ===== */
-.content{
-margin-left:240px;
-padding:25px;
-position:relative;
-z-index:2;
-}
-
-/* ===== TOPBAR ===== */
-.topbar{
-background: rgba(22, 61, 87, 0.9);
-backdrop-filter: blur(6px);
-color:white;
-padding:12px 25px;
-border-radius:30px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:25px;
-}
-
-.user-info{
-display:flex;
-align-items:center;
-gap:12px;
-}
-
-.user-avatar{
-width:35px;
-height:35px;
-border-radius:50%;
-object-fit:cover;
-}
-
-/* ===== CARD ===== */
-.card-box{
-background:white;
-border-radius:18px;
-padding:18px;
-box-shadow:0 3px 8px rgba(0,0,0,0.05);
-}
-
-/* ===== HEADER ===== */
-.header-bar{
-background:#dcdcdc;
-padding:12px 18px;
-border-radius:10px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-font-size:14px;
-margin-bottom:12px;
-}
-
-/* ===== SECTION ===== */
-.section{
-background:#ffffff;
-border-radius:10px;
-margin-top:10px;
-border:1px solid #dcdcdc;
-overflow:hidden;
-}
-
-.section-title{
-padding:8px 12px;
-background:#f1f3f5;
-border-bottom:1px solid #dcdcdc;
-font-weight:600;
-display:flex;
-align-items:center;
-gap:8px;
-font-size:14px;
-}
-
-.section-body{
-padding:12px 15px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px 30px;
-font-size:13px;
-}
-
-.item{
-display:flex;
-gap:10px;
-}
-
-.label{
-width:150px;
-color:#555;
-}
-
-.value{
-font-weight:500;
-}
-
-/* ===== STATUS ===== */
-.status{
-padding:4px 10px;
-border-radius:6px;
-font-size:12px;
-font-weight:600;
-}
-
-.pending{background:#f39c12;color:white;}
-.disetujui{background:#27ae60;color:white;}
-.ditolak{background:#e74c3c;color:white;}
-.aktif{background:#3498db;color:white;}
-
-/* ===== RISIKO ===== */
-.risk-box{
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.risk-label{
-background:#e74c3c;
-color:white;
-padding:5px 12px;
-border-radius:6px;
-font-size:12px;
-}
-
-/* ===== CATATAN ===== */
-.note{
-background:#f8d7da;
-border:1px solid #e74c3c;
-border-radius:8px;
-padding:12px;
-font-size:13px;
-line-height:1.6;
-}
-
-/* ✅ TAMBAHKAN DI SINI */
-.note-yellow{
-background:#ffeaa7;
-border:1px solid #e1c062;
-border-radius:8px;
-padding:12px;
-margin-top:10px;
-font-size:13px;
-}
-
-.note-red{
-background:#f8d7da;
-border:1px solid #e74c3c;
-border-radius:8px;
-padding:12px;
-margin-top:10px;
-font-size:13px;
-}
-
-/* PROFILE DROPDOWN */
-.profile-box{
-position:absolute;
-top:55px;
-right:0;
-width:260px;
-background:white;
-border-radius:15px;
-box-shadow:0 8px 20px rgba(0,0,0,0.15);
-overflow:hidden;
-z-index:999;
-opacity:0;
-transform:translateY(-10px);
-transition:0.2s;
-pointer-events:none;
-}
-
-.profile-box.show{
-opacity:1;
-transform:translateY(0);
-pointer-events:auto;
-}
-
-/* HEADER */
-.profile-header{
-display:flex;
-align-items:center;
-gap:12px;
-padding:15px;
-background:#f1f1f1;
-border-bottom:1px solid #ddd;
-}
-
-.profile-header img{
-width:45px;
-height:45px;
-border-radius:50%;
-}
-
-/* TEXT */
-.profile-text{
-display:flex;
-flex-direction:column;
-justify-content:center;
-}
-
-.profile-text b{
-font-size:14px;
-color:#000 !important;
-font-weight:600;
-margin:0;
-}
-
-.profile-text small{
-font-size:12px;
-color:#000 !important;
-opacity:0.7;
-margin:0;
-}
-
-/* BUTTON */
-.btn-edit{
-display:block;
-background:#6d8f73;
-color:white;
-text-align:center;
-padding:12px;
-font-size:14px;
-text-decoration:none;
-}
-
-.btn-edit:hover{
-background:#5a7860;
-}
-
-.btn-logout{
-width:100%;
-background:#d9534f;
-color:white;
-border:none;
-padding:12px;
-font-size:14px;
-}
-
-.btn-logout:hover{
-background:#c9302c;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-
-<div class="sidebar-header">
-<img src="/images/kmi-logo.png">
-</div>
-
-<a href="/admin/dashboard">
-<i class="bi bi-speedometer2"></i> Dashboard
-</a>
-
-<a href="/admin/users">
-<i class="bi bi-people"></i> Manajemen User
-</a>
-
-<a href="/admin/monitoring_permit"class="active">
-<i class="bi bi-clipboard-data"></i> Monitoring Permit
-</a>
-
-<a href="/admin/riwayat_permit">
-<i class="bi bi-clock-history"></i> Riwayat Permit
-</a>
-
-<a href="/admin/laporan">
-<i class="bi bi-bar-chart"></i> Laporan
-</a>
-
-<div class="logout">
-<form method="POST" action="/logout">
-@csrf
-<button class="btn btn-danger w-100 mb-2">Logout</button>
-</form>
-<span style="font-size:14px;">Admin</span>
-</div>
-
-</div>
-
-<!-- CONTENT -->
-<div class="content">
-
-<!-- TOPBAR -->
-<div class="topbar">
-<b>PERMIT TO WORK - PT.KMI</b>
-
-<!-- DROPDOWN PROFIL -->
-<div id="profileBox" class="profile-box d-none" onclick="event.stopPropagation()">
-
-    <div class="profile-header">
-        <img src="/images/me.jpg">
-        <div class="profile-text">
-            <b>ayuu03</b>
-            <small>ayuu17@outlook.com</small>
+    <!-- Header & Action -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center gap-3">
+            <a href="javascript:history.back()" class="text-gray-500 hover:text-blue-600 transition-colors">
+                <i class="ph ph-arrow-left text-2xl"></i>
+            </a>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Detail Permit <span class="text-blue-600">#{{ $permit->nomor_permit }}</span></h2>
+            </div>
+        </div>
+        
+        <!-- Status Badge -->
+        @php
+            $statusColor = match($permit->status) {
+                'Pending' => 'bg-yellow-100 text-yellow-800 border-yellow-300',
+                'Disetujui' => 'bg-blue-100 text-blue-800 border-blue-300',
+                'Selesai' => 'bg-green-100 text-green-800 border-green-300',
+                'Ditolak' => 'bg-red-100 text-red-800 border-red-300',
+                default => 'bg-gray-100 text-gray-800 border-gray-300'
+            };
+        @endphp
+        <div class="px-4 py-2 rounded-lg border {{ $statusColor }} flex items-center gap-2 font-semibold text-sm">
+            Status Terkini: {{ $permit->status }}
         </div>
     </div>
 
-    <a href="#" class="btn-edit">
-        <i class="bi bi-pencil"></i> Edit Profil
-    </a>
+    <!-- Grid Info -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Kolom Kiri: Info Utama -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Detail Pekerjaan -->
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                <div class="bg-gray-50 px-5 py-3 border-b border-gray-200">
+                    <h3 class="font-semibold text-gray-800">Informasi Pekerjaan</h3>
+                </div>
+                <div class="p-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
+                        <div>
+                            <p class="text-sm text-gray-500">Judul Pekerjaan</p>
+                            <p class="font-medium text-gray-900">{{ $permit->nama_pekerjaan }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Jenis Pekerjaan</p>
+                            <p class="font-medium text-gray-900">{{ $permit->jenis_pekerjaan }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Tanggal Pelaksanaan</p>
+                            <p class="font-medium text-gray-900">
+                                <i class="ph ph-calendar-blank text-gray-400 mr-1"></i>
+                                {{ $permit->tanggal_kerja?->format('d M Y') ?? '-' }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Waktu (Jam)</p>
+                            <p class="font-medium text-gray-900">
+                                <i class="ph ph-clock text-gray-400 mr-1"></i>
+                                {{ $permit->jam_mulai ?? '-' }} s/d {{ $permit->jam_selesai ?? '-' }}
+                            </p>
+                        </div>
+                        <div class="sm:col-span-2 border-t pt-3">
+                            <p class="text-sm text-gray-500">Detail Lokasi</p>
+                            <p class="font-medium text-gray-900">
+                                {{ $permit->gedung ? $permit->gedung . ' - ' : '' }} {{ $permit->lokasi ?? '-' }}
+                            </p>
+                        </div>
+                        <div class="sm:col-span-2 border-t pt-3">
+                            <p class="text-sm text-gray-500">Deskripsi Rinci</p>
+                            <p class="text-sm text-gray-800 mt-1 whitespace-pre-line">{{ $permit->deskripsi ?? 'Tidak ada deskripsi spesifik.' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <form method="POST" action="/logout">
-        <button class="btn-logout">
-            <i class="bi bi-box-arrow-right"></i> Logout
-        </button>
-    </form>
+            <!-- APD & Risiko -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- APD -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                    <div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex items-center gap-2">
+                        <i class="ph ph-hard-hat text-blue-600 text-lg"></i>
+                        <h3 class="font-semibold text-gray-800">Persyaratan APD</h3>
+                    </div>
+                    <div class="p-5">
+                        @if(is_array($permit->apd) && count($permit->apd) > 0)
+                            <ul class="space-y-2">
+                                @foreach($permit->apd as $apd_item)
+                                <li class="flex items-center gap-2 text-sm text-gray-700">
+                                    <i class="ph-fill ph-check-circle text-green-500"></i>
+                                    {{ $apd_item }}
+                                </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p class="text-sm text-gray-500 italic">Tidak ada APD spesifik yang didaftarkan.</p>
+                        @endif
+                    </div>
+                </div>
 
-</div>
+                <!-- Risiko -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                    <div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex items-center gap-2">
+                        <i class="ph ph-warning-circle text-orange-500 text-lg"></i>
+                        <h3 class="font-semibold text-gray-800">Tingkat Risiko</h3>
+                    </div>
+                    <div class="p-5">
+                        <div class="mb-4">
+                            <p class="text-xs text-gray-500 mb-1">Self-Assessment Pekerja:</p>
+                            <span class="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1 rounded border border-gray-200">
+                                {{ $permit->tingkat_risiko ?? 'Belum dinilai' }}
+                            </span>
+                        </div>
+                        <div class="border-t pt-3">
+                            <p class="text-xs text-gray-500 mb-1">Evaluasi Safety Officer:</p>
+                            @if($permit->evaluasi_risiko)
+                                <p class="text-sm text-gray-800 font-medium">{{ $permit->evaluasi_risiko }}</p>
+                            @else
+                                <p class="text-xs text-gray-400 italic">Belum ada evaluasi resmi.</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-<div class="user-info">
-<i class="bi bi-bell"></i>
-<span>Admin</span>
-<img src="/images/me.jpg" class="user-avatar">
-</div>
-</div>
+        </div>
 
-<h4>Detail Permit</h4>
-<p>Informasi lengkap permit kerja</p>
+        <!-- Kolom Kanan: Tim & Catatan -->
+        <div class="space-y-6">
+            
+            <!-- Audit Trail / Personel -->
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                <div class="bg-gray-50 px-5 py-3 border-b border-gray-200">
+                    <h3 class="font-semibold text-gray-800">Personel Terlibat</h3>
+                </div>
+                <div class="p-5 space-y-4">
+                    
+                    <!-- Pemohon -->
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                            <i class="ph ph-user text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Pemohon (Pekerja)</p>
+                            <p class="text-sm font-semibold text-gray-900">{{ $permit->user->name ?? '-' }}</p>
+                            <p class="text-xs text-gray-500">{{ $permit->department->nama_departemen ?? '-' }}</p>
+                        </div>
+                    </div>
 
-<div class="card-box">
+                    <div class="border-l-2 border-gray-200 ml-5 h-4 my-1"></div>
 
-<!-- HEADER -->
-<div class="header-bar">
-<div>Nomor Permit : <b>{{ $permit['nomor'] }}</b></div>
-<div>Status : 
-<span class="status 
-{{ strtolower($permit['status']) == 'pending' ? 'pending' : '' }}
-{{ strtolower($permit['status']) == 'disetujui' ? 'disetujui' : '' }}
-{{ strtolower($permit['status']) == 'ditolak' ? 'ditolak' : '' }}
-{{ strtolower($permit['status']) == 'aktif' ? 'aktif' : '' }}">
-{{ $permit['status'] }}
-</span>
-</div>
-</div>
+                    <!-- Supervisor -->
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                            <i class="ph ph-user-gear text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Supervisor (Penyetuju)</p>
+                            <p class="text-sm font-semibold text-gray-900">{{ $permit->supervisor->name ?? '-' }}</p>
+                            @if($permit->catatan_supervisor)
+                                <div class="mt-2 p-2 bg-gray-50 border border-gray-100 rounded text-xs text-gray-700">
+                                    <span class="font-medium text-gray-900">Catatan:</span><br>
+                                    {{ $permit->catatan_supervisor }}
+                                </div>
+                            @endif
+                        </div>
+                    </div>
 
-<!-- INFORMASI -->
-<div class="section">
-<div class="section-title">
-<i class="bi bi-file-earmark-text" style="color:#3877CD;"></i> Informasi Permit
-</div>
-<div class="section-body">
-<div class="grid">
-<div class="item"><div class="label">Nomor Permit</div><div class="value">: {{ $permit['nomor'] }}</div></div>
-<div class="item"><div class="label">Jenis Pekerjaan</div><div class="value">: {{ $permit['jenis'] }}</div></div>
-<div class="item"><div class="label">Tanggal Pelaksanaan</div><div class="value">: {{ $permit['tgl_kerja'] }}</div></div>
-<div class="item"><div class="label">Pekerjaan</div><div class="value">: {{ $permit['pekerjaan'] }}</div></div>
-<div class="item"><div class="label">Waktu</div><div class="value">: {{ $permit['waktu'] }}</div></div>
-</div>
-</div>
-</div>
+                    <div class="border-l-2 border-gray-200 ml-5 h-4 my-1"></div>
 
-<!-- PEKERJA -->
-<div class="section">
-<div class="section-title">
-<i class="bi bi-person" style="color:#3877CD;"></i> Informasi Pekerja
-</div>
-<div class="section-body">
-<div class="grid">
-<div class="item"><div class="label">Nama Pekerja</div><div class="value">: {{ $permit['nama'] }}</div></div>
-<div class="item"><div class="label">Departemen</div><div class="value">: {{ $permit['departemen'] }}</div></div>
-<div class="item"><div class="label">Section</div><div class="value">: {{ $permit['section'] }}</div></div>
-<div class="item"><div class="label">Supervisor</div><div class="value">: {{ $permit['supervisor'] }}</div></div>
-</div>
-</div>
-</div>
+                    <!-- Safety Officer -->
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                            <i class="ph ph-shield-plus text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Safety Officer (Evaluator)</p>
+                            <p class="text-sm font-semibold text-gray-900">{{ $permit->safetyOfficer->name ?? '-' }}</p>
+                            @if($permit->catatan_safety)
+                                <div class="mt-2 p-2 bg-gray-50 border border-gray-100 rounded text-xs text-gray-700">
+                                    <span class="font-medium text-gray-900">Catatan Tambahan:</span><br>
+                                    {{ $permit->catatan_safety }}
+                                </div>
+                            @endif
+                        </div>
+                    </div>
 
-<!-- LOKASI -->
-<div class="section">
-<div class="section-title">
-<i class="bi bi-geo-alt" style="color:#3877CD;"></i> Lokasi Pekerjaan
-</div>
-<div class="section-body">
-<div class="grid">
-<div class="item"><div class="label">Gedung</div><div class="value">: {{ $permit['gedung'] }}</div></div>
-<div class="item"><div class="label">Area</div><div class="value">: {{ $permit['area'] }}</div></div>
-<div class="item"><div class="label">Lokasi</div><div class="value">: {{ $permit['lokasi'] }}</div></div>
-</div>
-</div>
-</div>
+                </div>
+            </div>
 
-<!-- DESKRIPSI -->
-<div class="section">
-<div class="section-title">
-<i class="bi bi-file-text" style="color:#3877CD;"></i> Deskripsi Pekerjaan
-</div>
-<div class="section-body">
-{{ $permit['deskripsi'] }}
-</div>
-</div>
+        </div>
 
-<!-- RISIKO -->
-<div class="section">
-<div class="section-title">
-<i class="bi bi-exclamation-circle text-danger"></i> Tingkat Risiko
+    </div>
 </div>
-<div class="section-body">
-<div class="risk-box">
-
-<div>
-@foreach($permit['apd'] as $item)
-✔ {{ $item }} <br>
-@endforeach
-</div>
-
-<div class="risk-label">{{ $permit['risiko'] }}</div>
-
-</div>
-</div>
-</div>
-
-<!-- CATATAN SUPERVISOR -->
-<div class="note-yellow">
-<i class="bi bi-pencil-square"></i> Catatan Supervisor
-<br>
-{{ $permit['catatan']['supervisor'] ?? '-' }}
-</div>
-
-<!-- CATATAN SAFETY -->
-<div class="note-red">
-<i class="bi bi-pencil-square"></i> Catatan Safety Officer
-<br>
-{{ $permit['catatan']['safety'] ?? '-' }}
-</div>
-
-</div>
-
-</div>
-
-</body>
-</html>
+@endsection
